@@ -5,44 +5,41 @@ using UnityEngine.UI;
 
 public class LetterController : MonoBehaviour
 {
-    public Canvas canvas;//Set in editor
+    public GameObject Letter_Prefab;//Set in editor
     private Camera cam;
     private Vector2 mousePos = new Vector2();
-    private Font arial;
 
     private enum UpDown { Down = -1, Start = 0, Up = 1 };
-    private Text mousetext;
-    private float textHeight;
+    public GameObject sword;
+    private float textHeight = 0;
     private float screenWidth;
 
     private List<GameObject> currentLetters = new List<GameObject>();
-    private int AMOUNT_LETTERS = 3;
+    private const int AMOUNT_LETTERS = 3;
 
     void Start()
     {
-        arial = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
         cam = Camera.main;
         screenWidth = cam.ScreenToWorldPoint(new Vector3(Screen.width, 0, cam.nearClipPlane)).x;
 
-        // Create Mouse Letter
-        GameObject textGO = new GameObject("TextObject");
-        textGO.transform.SetParent(this.transform);
-        textGO.AddComponent<Text>();
-        mousetext = textGO.GetComponent<Text>();
-        mousetext.font = arial;
-        mousetext.fontSize = 80;
-        mousetext.text = "A";
-        mousetext.horizontalOverflow = HorizontalWrapMode.Overflow;
-        mousetext.alignment = TextAnchor.MiddleCenter;
-        mousetext.transform.localScale = Vector3.one;
+        if(sword == null)
+        {
+            // Create Sword
+            sword = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            sword.transform.SetParent(this.transform);
+            sword.transform.localScale = new Vector3(20, 40, 20);
+            sword.GetComponent<Renderer>().material.color = new Color(0, 1, 0, 1);
+        }
 
-        textHeight = ((RectTransform)mousetext.transform).rect.height;
+        var tempLetter = SpawnLetter();
+        textHeight = ((RectTransform)tempLetter.transform).rect.height;
+        Destroy(tempLetter);
     }
 
     void FixedUpdate()
     {
-        Vector3 pos = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, cam.nearClipPlane));
-        mousetext.transform.position = pos;
+        Vector3 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+        sword.transform.position = pos;
 
         if(currentLetters.Count < AMOUNT_LETTERS)
         {
@@ -50,10 +47,19 @@ public class LetterController : MonoBehaviour
         }
 
         //Reverse iterate to allow removing elements
-        for(int i = currentLetters.Count-1; i>=0; i--)
+        for (int i = currentLetters.Count-1; i>=0; i--)
         {
             GameObject letter = currentLetters[i];
-            if (letter.transform.position.y < cam.ScreenToWorldPoint(new Vector3(0, 0 - textHeight, cam.nearClipPlane)).y)
+
+            //If letter has already been destroyed
+            if(letter == null)
+            {
+                Debug.Log("Removing already destroyed letter");
+                currentLetters.RemoveAt(i);
+                continue;
+            }
+
+            if (letter.transform.position.y < cam.ScreenToWorldPoint(new Vector3(0, 0 - textHeight, 0)).y)
             {
                 Destroy(letter);
                 currentLetters.RemoveAt(i);
@@ -65,10 +71,8 @@ public class LetterController : MonoBehaviour
     private GameObject SpawnLetter()
     {
         // Create Gameobject Letter
-        GameObject LetterObject = new GameObject("LetterObject");
+        GameObject LetterObject = Instantiate(Letter_Prefab);
         LetterObject.transform.SetParent(this.transform);
-        LetterObject.AddComponent<Text>();
-        LetterObject.AddComponent<Rigidbody2D>();
 
         // Vars
         Text letter = LetterObject.GetComponent<Text>();
@@ -78,14 +82,10 @@ public class LetterController : MonoBehaviour
         int direction = Random.Range(0,2)*2-1; //Random number 0 or 1, *2 == 0 or 2, -1 == -1 or 1 (Negative or positive)
         float yVelocity = Random.Range(12, 20);
 
+        
         // Properties
-        rigidbody.gravityScale = 2;
-        letter.font = arial;
-        letter.fontSize = 80;
-        letter.horizontalOverflow = HorizontalWrapMode.Overflow;
-        letter.alignment = TextAnchor.MiddleCenter;
         letter.transform.localScale = Vector3.one;
-        letter.transform.position = cam.ScreenToWorldPoint(new Vector3(startPosition, 0, cam.nearClipPlane));
+        letter.transform.position = cam.ScreenToWorldPoint(new Vector3(startPosition, 0, 0));
 
         // Behaviour
         rigidbody.velocity = new Vector2(0, yVelocity);
@@ -110,7 +110,7 @@ public class LetterController : MonoBehaviour
         float startPosition = letter.transform.position.x;
         float distanceToSide = Mathf.Max(screenWidth-startPosition, startPosition);
 
-       // Debug.Log("To side: " + distanceToSide + " StartPosition: " + startPosition + " Width: " + screenWidth);
+        // Debug.Log("To side: " + distanceToSide + " StartPosition: " + startPosition + " Width: " + screenWidth);
 
         //dx = Vx * (2Vy/g)  ==  Vx = (dx*g)/(2Vy)
         return (distanceToSide * Mathf.Abs(Physics2D.gravity.y) * rigidbody.gravityScale) / (2 * yVelocity);

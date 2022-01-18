@@ -3,7 +3,9 @@ guid: 2ae7c1f48dc347b418d72d04c82e23bf
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - canvas: {instanceID: 0}
+  - Letter_Prefab: {fileID: 5532431362903713153, guid: f99b8b1f59062a54daeeba44aa72ef35, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
