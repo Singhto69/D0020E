@@ -5,7 +5,7 @@ import math
 import socket
 
 # StartX , StartY , Width ( from X to ) , Height ( from Y to )
-trackBox = (287, 100, 80, 200)
+trackBox = (287, 150, 130, 130)
 collideBox = (10, 100, 50, 50)
 
 # define a video capture object
@@ -21,7 +21,7 @@ trackinit = False
 #pip install opencv-contrib-python==3.4.11.45
 
 #UDP_IP = "127.0.0.1"
-UDP_IP = "192.168.10.207"
+UDP_IP = "192.168.10.166"
 UDP_PORT = 5065
 #AF_INET = IPv4
 #SOCK_DGRAM = UDP
@@ -40,9 +40,9 @@ while True:
 
     #Functions.drawColliderBox(result,collideBox)
     #Update tracker
-    #if not trackinit:
-    trackok = tracker.init(result, trackBox)
-    #trackinit = True
+    if not trackinit:
+        trackok = tracker.init(result, trackBox)
+        trackinit = True
 
     trackok, trackBox = tracker.update(result)
 
