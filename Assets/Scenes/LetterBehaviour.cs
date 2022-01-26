@@ -4,11 +4,17 @@ using UnityEngine;
 
 public class LetterBehaviour : MonoBehaviour
 {
+    private Camera cam;
 
-    // when the GameObjects collider arrange for this GameObject to travel to the left of the screen
+    private void Start()
+    {
+        cam = Camera.main;
+    }
+
     void OnTriggerEnter2D(Collider2D col)
     {
         //If sword hit me, kill me.
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
+
 }

@@ -320,6 +320,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Letter_Prefab: {fileID: 5532431362903713153, guid: f99b8b1f59062a54daeeba44aa72ef35, type: 3}
   sword: {fileID: 1189090405}
+  AMOUNT_LETTERS: 3
+  AMOUNT_STARTING_POS: 2
 --- !u!1 &1189090405
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,7 +336,7 @@ GameObject:
   - component: {fileID: 1189090409}
   m_Layer: 0
   m_Name: Sword
-  m_TagString: Untagged
+  m_TagString: sword
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -414,7 +416,7 @@ CapsuleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
