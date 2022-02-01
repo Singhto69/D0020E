@@ -42,10 +42,7 @@ while True:
     # so when multiplied with original image removes all non-blue regions
     result = cv2.bitwise_and(frame, frame, mask=Functions.maskGen(np,frame))
 
-    #----------------------------------------- Tracker
-
-    #Functions.drawColliderBox(result,collideBox)
-    #Update tracker
+    #Tracker
     if not trackinit:
         trackok = tracker.init(result, trackBox)
         trackinit = True
@@ -53,31 +50,29 @@ while True:
     trackok, trackBox = tracker.update(result)
 
     if trackok:
-        Functions.drawTrackBox(result, trackBox)
+        Functions.drawBox(result,trackBox,(0,255,0))
+        Functions.drawMultipleText(result,("trackBox" ,
+                            "X: " + str(int(trackBox[0])),
+                            "Xw: " + str(int(trackBox[0])+int(trackBox[2])),
+                            "Y: " + str(int(trackBox[1])),
+                            "Yh: " + str(int(trackBox[1]) + int(trackBox[3])) ) , [100, 380] ,(0,255,0))
+
         #print(Functions.boxCordsToString(trackBox))
         sock.sendto((Functions.boxCordsToString(trackBox)).encode(), (UDP_IP, UDP_PORT))
 
     else:
         # Tracking failure
         cv2.putText(result, "Tracking failure detected", (100, 380), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
-        #trackBox = (250, 170, 130, 130)
-        #//trackok, trackBox =
         tracker.update(result)
 
-
     #if Functions.detectRectangleCollision(collideBox,trackBox):
-    #   cv2.putText(result, "Collision", (100, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
-
-
-    # Display result
-    #cv2.imshow("Tracking", result)
+    #cv2.putText(result, "Collision", (100, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
     # Calculate and display fps
     #fps = cv2.getTickFrequency()/(cv2.getTickCount()- timer)
     #cv2.putText(result,str(fps),(75,50),cv2.FONT_HERSHEY_COMPLEX,0.7,(255,255,255),2)
 
     #Display options
-
     #cv2.imshow('frame', frame)
     cv2.imshow('inverted',inverted)
     #cv2.imshow('mask', mask)
@@ -87,12 +82,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
-
 # After the loop release the cap object
 vid.release()
 cv2.destroyAllWindows()
-
-# p1 = (int(bbox[0]), int(bbox[1]))
-# p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-# cv2.rectangle(result, p1, p2, (255, 0, 0), 2, 1)

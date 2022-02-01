@@ -1,11 +1,17 @@
 import cv2
+import socket
+
+
+
+
+
 
 
 def boxCordsToString(array):
-    #newstr = ""
     newstr = str((int(abs(array[0]-500)))) + ":" + str((int(abs((array[1]/2)-250)))) + ":" +\
              str((int(array[2]))) + ":" + str((int(array[3]))) + ":"
-
+    #For unknown length strings
+    # newstr = ""
     #for i in array:
         #if count == 0:
             #i = abs(i-500)
@@ -16,9 +22,6 @@ def boxCordsToString(array):
         #newstr = newstr + str((int(i))) + ":"
     #print(newstr)
     return newstr
-
-
-
 
 def detectRectangleCollision( box1 , box2):
     #collidebox
@@ -49,16 +52,7 @@ def detectRectangleCollision( box1 , box2):
     if (b1botright[1] >= b2topleft[1] or b2botright[1] >= b1topleft[1]):
         print("Hi3")
         return False
-
     return True
-
-
-
-
-    #if (B1[0] >= B2[2]) or (B1[2] <= B2[0]) or (B1[3] <= B2[1]) or (B1[1] >= B2[3]):
-        #return True
-    #else:
-      #  return False
 
 def drawColliderBox(frame, box):
     x, y, w, h = int(box[0]), int(box[1]), int(box[2]), int(box[3])
@@ -78,6 +72,21 @@ def drawTrackBox(frame, box):
     cv2.putText(frame, "Y: " + str(y), (100, 440), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
     cv2.putText(frame, "Yh: " + str(y+h), (100, 460), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
+
+def drawMultipleText(frame,inputtext,startingcoordinates,color):
+    for t in inputtext:
+        drawText(frame,t,tuple(startingcoordinates),color)
+        startingcoordinates[1] = startingcoordinates[1] + 20
+    return
+
+def drawBox(frame, box, color):
+    x, y, w, h = int(box[0]), int(box[1]), int(box[2]), int(box[3])
+    cv2.rectangle(frame, (x, y), ((x + w), (y + h)), color, 3, 1)
+
+def drawText(frame,text,coords,color):
+    cv2.putText(frame,text, coords, cv2.FONT_HERSHEY_SIMPLEX, 0.75, color, 2)
+
+
 def maskGen(numpy, frame):
     # It converts the BGR color space of image to HSV color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -96,3 +105,4 @@ def maskGen(numpy, frame):
     # preparing the mask to overlay
     mask = cv2.inRange(hsv, lower_red, upper_red)
     return mask
+
