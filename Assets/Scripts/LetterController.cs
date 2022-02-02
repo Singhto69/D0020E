@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class LetterController : MonoBehaviour
 {
     public GameObject Letter_Prefab;//Set in editor
+    public netMan networkManager;
     private Camera cam;
     private Vector2 mousePos = new Vector2();
 
@@ -22,7 +23,8 @@ public class LetterController : MonoBehaviour
     public int AMOUNT_STARTING_POS = 2;
 
     void Start()
-    {
+    {   
+
         cam = Camera.main;
         rightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x;
         leftEdge = cam.ScreenToWorldPoint(new Vector2(0, 0)).x;
@@ -47,8 +49,21 @@ public class LetterController : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector3 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+        networkManager.ReceiveData();
+        
+        Vector3 udppos = new Vector3((float)networkManager.coordList[0] ,
+                        (float)networkManager.coordList[1],
+                        0.0f);
+        print(udppos);
+
+        Vector3 pos = cam.ScreenToWorldPoint(udppos);
+        //Vector3 pos2 = cam.ScreenToWorldPoint(Input.mousePosition);
+
+        //Input.mousePosition
+        //cam.ScreenToWorldPoint(udppos);
+        //print(Input.mousePosition);
         sword.transform.position = pos;
+        (networkManager.Sphere).transform.position = pos;
 
         if(currentLetters.Count < AMOUNT_LETTERS)
         {
