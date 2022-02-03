@@ -22,12 +22,44 @@ public class LetterController : MonoBehaviour
     public int AMOUNT_LETTERS = 2;
     public int AMOUNT_STARTING_POS = 2;
 
+    private string LetterString = "";
+
     void Start()
     {   
 
         cam = Camera.main;
         rightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x;
         leftEdge = cam.ScreenToWorldPoint(new Vector2(0, 0)).x;
+
+
+        //Koden nedan genererar en massiv string där man kan ta ut ett värde på random.
+        //t.ex om vi har AAAABBCD och vi får random value 4 så plockar vi index 4 och får ett B på 25% probability.
+
+        //Frekvens A-Ö baserad på https://www.sttmedia.com/characterfrequency-swedish
+        int[] bfreq = new int[] {1004, 131, 171, 490, 985, 181, 344, 285, 501, 90, 324, 481, 355, 845, 406, 157, 1, 788, 541, 889, 186, 255, 0, 11, 49, 4, 166, 210, 150};
+        for(int i = 0; i< 29; i++)
+        {
+            for (int j = 0; j< bfreq[i]; j++)
+            {
+                if(i<26) // A -> Z
+                {
+                    LetterString += (char)('A' + i);
+                }
+                else if (i == 26) //Å
+                {
+                    LetterString += (char)('A' + 132);
+                }
+                else if (i == 27) //Ä
+                {
+                    LetterString += (char)('A' + 131);
+                }
+                else //Ö
+                {
+                    LetterString += (char)('A' + 149);
+                }
+            }
+        }
+
 
         if (sword == null)
         {
@@ -134,110 +166,9 @@ public class LetterController : MonoBehaviour
             rigidbody.velocity = new Vector2(-rigidbody.velocity.x, rigidbody.velocity.y);
         }
 
-
-        //https://www.sttmedia.com/characterfrequency-swedish
-
-        //Sätt denna som resultat av switchen
-        int finalOffset; 
-
-        //Ska reworka till en iterativ lösning, men detta är en okej templösning.
-        switch (letterOffset)
-        {
-            case int n when (n <= 1004):
-                finalOffset = 0; //A 10.04%
-                break;
-            case int n when (n >= 1005 && n <= 1136):
-                finalOffset = 1; //B 01.31%
-                break;
-            case int n when (n >= 1137 && n <= 1308):
-                finalOffset = 2; //C 01.71%
-                break;
-            case int n when (n >= 1309 && n <= 1799):
-                finalOffset = 3; //D 04.9%
-                break;
-            case int n when (n >= 1800 && n <= 2785):
-                finalOffset = 4; //E 09.85%
-                break;
-            case int n when (n >= 2786 && n <= 2967):
-                finalOffset = 5; //F 01.81%
-                break;
-            case int n when (n >= 2968 && n <= 3312):
-                finalOffset = 6; //G 03.44%
-                break;
-            case int n when (n >= 3313 && n <= 3598):
-                finalOffset = 7; //H 02.85%
-                break;
-            case int n when (n >= 3599 && n <= 4100):
-                finalOffset = 8; //I 05.01%
-                break;
-            case int n when (n >= 4101 && n <= 4191):
-                finalOffset = 9; //J 00.90%
-                break;
-            case int n when (n >= 4192 && n <= 4516):
-                finalOffset = 10; //K 03.24%
-                break;
-            case int n when (n >= 4517 && n <= 4998):
-                finalOffset = 11; //L 04.81%
-                break;
-            case int n when (n >= 4999 && n <= 5354):
-                finalOffset = 12; //M 03.55%
-                break;
-            case int n when (n >= 5355 && n <= 6200):
-                finalOffset = 13; //N 08.45%
-                break;
-            case int n when (n >= 6201 && n <= 6607):
-                finalOffset = 14; //O 04.06%
-                break;
-            case int n when(n >= 6608 && n <= 6765):
-                finalOffset = 15; //P 01.57%
-                break;
-            case int n when (n >= 6766 && n <= 6767):
-                finalOffset = 16; //Q 00.01%
-                break;
-            case int n when (n >= 6768 && n <= 7556):
-                finalOffset = 17; //R 07.88%
-                break;
-            case int n when (n >= 7557 && n <= 8089):
-                finalOffset = 18; //S 05.32%
-                break;
-            case int n when (n >= 8090 && n <= 8979):
-                finalOffset = 19; //T 08.89%
-                break;
-            case int n when (n >= 8980 && n <= 9166):
-                finalOffset = 20; //U 01.86%
-                break;
-            case int n when (n >= 9167 && n <= 9422):
-                finalOffset = 21; //V 02.55% & W 0%
-                break;
-            case int n when (n >= 9423 && n <= 9434):
-                finalOffset = 23; //X 00.11%
-                break;
-            case int n when (n >= 9434 && n <= 9483):
-                finalOffset = 24; //Y 00.49%
-                break;
-            case int n when (n >= 9484 && n <= 9488):
-                finalOffset = 25; //Z 00.04%
-                break;
-            //A = 65
-            //Å = 197 => 132
-            //Ä = 196 => 131
-            //Ö = 214 => 149
-            case int n when (n >= 9489 && n <= 9665):
-                finalOffset = 132; //Å 01.66%
-                break;
-            case int n when (n >= 9666 && n <= 9876):
-                finalOffset = 131; //Ä 02.10%
-                break;
-            case int n when (n >= 9877 && n <= 9999): //crap
-                finalOffset = 149; //Ö 01.50%
-                break; 
-            default:
-                finalOffset = -1;
-                break;
-        }
-        Debug.Log(letterOffset + " " + finalOffset);
-
-        letter.text = char.ToString((char)('A' + finalOffset));
+        //Här väljer vi en random char ur strängen.
+        letter.text = char.ToString((LetterString[letterOffset]));
+        //Debug.Log((LetterString[letterOffset]));
 
         return LetterObject;
     }
