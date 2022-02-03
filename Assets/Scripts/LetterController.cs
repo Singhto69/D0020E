@@ -96,6 +96,7 @@ public class LetterController : MonoBehaviour
                 }
             }
         }
+        Debug.Log(LetterString);
 
 
         if (sword == null)
@@ -109,7 +110,7 @@ public class LetterController : MonoBehaviour
 
         COLLISION_LAYER = LayerMask.NameToLayer("letter_collision");
         NO_COLLISION_LAYER = LayerMask.NameToLayer("letter_no_collision");
-        Physics2D.IgnoreLayerCollision(NO_COLLISION_LAYER, NO_COLLISION_LAYER);
+       // Physics2D.IgnoreLayerCollision(NO_COLLISION_LAYER, NO_COLLISION_LAYER);
 
         var tempLetter = SpawnLetter();
         textHeight = ((RectTransform)tempLetter.transform).rect.height;
@@ -128,7 +129,7 @@ public class LetterController : MonoBehaviour
     // fyll lista med alla ord
     public void fillUpWords()
     {
-        foreach (var line in System.IO.File.ReadLines(@"C:\Users\erikp\Documents\d0020e\D0020E\ordlista.txt")) // ändra källa
+        foreach (var line in System.IO.File.ReadLines(@"Assets\ordlista.txt")) // ändra källa
         {
             dictionary.Add(line);
             size++;
@@ -242,7 +243,7 @@ public class LetterController : MonoBehaviour
             if(letter == null)
             {
                 Debug.Log("Removing already destroyed letter");
-                currentLetters.RemoveAt(i);
+               currentLetters.RemoveAt(i);
                 continue;
             }
 

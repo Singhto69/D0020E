@@ -57,7 +57,7 @@ public class netMan : MonoBehaviour
      public void ReceiveData()
      {
         List<int>templist = new List<int>();
-         if (newSock.Available > 0)
+        /* if (newSock.Available > 0)
          {
             receivedData = newSock.Receive(ref sender);
             dataString = Encoding.ASCII.GetString(receivedData);
@@ -68,7 +68,7 @@ public class netMan : MonoBehaviour
          {
             //print("No data to receive");
             
-         }
+         }*/
      }
 
     public void getCoords(String dataString){
