@@ -16,16 +16,18 @@ import packages.network.SocketO as SocketO
 
 
 # For tracker... pip install opencv-contrib-python==3.4.11.45
-#trackObj = TrackerO.TrackerO()
+trackObj = TrackerO.TrackerO()
+trackObj.createCSRT()
 #trackObj.setTrackBox(np.array([287, 150, 130, 130]))
 #trackObj.setTrackBox((287,150,130,130))
-#trackObj.setCSRT()
+
 
 #tracker = cv2.TrackerCSRT_create()
 #trackBox = np.array([150, 150, 100, 100])
 
-trackers = [cv2.TrackerCSRT_create()]
-trackInit = False
+#trackers = [cv2.TrackerCSRT_create()]
+#trackInit = False
+
 
 sock = SocketO.SocketO()
 sock.setIP("192.168.10.166")
@@ -54,20 +56,24 @@ while True:
     #result = Masks.maskGen(frame,cv2.COLOR_BGR2HSV)
 
     # Tracker
-    if not trackInit:
-        trackBox = cv2.selectROI(result, False, True)
-        trackOk = trackers[-1].init(result, tuple(trackBox))
-        trackInit = True
+#    if not trackInit:
+#        trackBox = cv2.selectROI(result, False, True)
+#        trackOk = trackers[-1].init(result, tuple(trackBox))
+#        trackInit = True
 
 
-#    if not trackObj.init:
-#        trackOk = trackObj.tracker.init(result, trackObj.trackBox)
-#        trackObj.init = True
+    if not trackObj.init:
+        trackObj.setTrackBox(cv2.selectROI(result, False, True))
+        trackObj.trackOk = trackObj.getTracker().init(result, trackObj.getTrackBox())
+        trackObj.init = True
 
-    trackOk, trackBox = trackers[-1].update(result)
-    trackBox = np.asarray(trackBox)
+    #trackOk, trackBox = trackers[-1].update(result)
+    trackOk, trackBox = trackObj.getTracker().update(result)
+    trackObj.setTrackBox(np.asarray(trackBox))
+    #trackBox = np.asarray(trackBox)
 
     if trackOk:
+        trackBox = trackObj.getTrackBox()
         Drawtools.drawBox(result, trackBox, (0, 255, 0))
         Drawtools.drawMultipleText(result, ("trackBox",
                                             "X: " + str(int(trackBox[0])),
@@ -79,12 +85,20 @@ while True:
 
     else:
         # Tracking failure
-        Drawtools.drawText(result, "Tracking failure detected", np.array([100, 380]), (0, 0, 255))
+        Drawtools.drawMultipleText(result,
+                                   ("Tracking Failure", "Place object in center. Then press R"),
+                                   np.array([100, 380]),(0, 0, 255))
         if cv2.waitKey(1) & 0xFF == ord('r'):
-            trackBox = cv2.selectROI(result, False, True)
-            trackers.append(cv2.TrackerCSRT_create())
-            trackers.remove(trackers[0])
-            trackOk = trackers[-1].init(result, tuple(trackBox))
+            trackObj.setTrackBox(cv2.selectROI(result, False, True))
+            trackObj.createCSRT()
+            trackObj.removeFirstTracker()
+            trackObj.trackOk = trackObj.getTracker().init(result, trackObj.getTrackBox())
+
+
+            #trackBox = cv2.selectROI(result, False, True)
+            #trackers.append(cv2.TrackerCSRT_create())
+            #trackers.remove(trackers[0])
+            #trackOk = trackers[-1].init(result, tuple(trackBox))
 
 
 
