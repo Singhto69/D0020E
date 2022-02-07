@@ -46,7 +46,10 @@ while True:
     inverted = cv2.flip(frame, 1)
     # The black region in the mask has the value of 0,
     # so when multiplied with original image removes all non-blue regions
-    result = cv2.bitwise_and(frame, frame, mask=Masks.maskMergedGen(frame,cv2.COLOR_BGR2HSV))
+    result = cv2.bitwise_and(frame, frame, mask=Masks.maskMergedGen(frame,
+                                                                    cv2.COLOR_BGR2HSV,
+                                                                    Masks.maskRedTuned1(),
+                                                                    Masks.maskRedTuned2()))
 
     #result = Masks.maskGen(frame,cv2.COLOR_BGR2HSV)
 
