@@ -80,6 +80,7 @@ while True:
         if cv2.waitKey(1) & 0xFF == ord('r'):
             trackBox = cv2.selectROI(result, False, True)
             trackers.append(cv2.TrackerCSRT_create())
+            trackers.remove(trackers[0])
             trackOk = trackers[-1].init(result, tuple(trackBox))
 
 
