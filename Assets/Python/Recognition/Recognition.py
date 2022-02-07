@@ -1,3 +1,6 @@
+import random
+import string
+
 import cv2
 import numpy as np
 import packages.opencv.Drawtools as Drawtools
@@ -8,9 +11,6 @@ import packages.network.SocketO as SocketO
 
 # StartX , StartY , Width ( from StartX to ... ) , Height ( from StartY to ...)
 
-# define a video capture object
-vid = cv2.VideoCapture(0)
-ret, frame = vid.read()
 
 # initialize tracker
 
@@ -21,8 +21,10 @@ ret, frame = vid.read()
 #trackObj.setTrackBox((287,150,130,130))
 #trackObj.setCSRT()
 
-tracker = cv2.TrackerCSRT_create()
-trackBox = np.array([287, 150, 130, 130])
+#tracker = cv2.TrackerCSRT_create()
+#trackBox = np.array([150, 150, 100, 100])
+
+trackers = [cv2.TrackerCSRT_create()]
 trackInit = False
 
 sock = SocketO.SocketO()
@@ -32,28 +34,34 @@ sock.setUDP()
 sock.createSocket()
 
 
+# define a video capture object
+vid = cv2.VideoCapture(0)
+
+
 
 while True:
-    timer = cv2.getTickCount()
+    #timer = cv2.getTickCount()
     # Capture the video frame by frame
     ret, frame = vid.read()
     inverted = cv2.flip(frame, 1)
-
     # The black region in the mask has the value of 0,
     # so when multiplied with original image removes all non-blue regions
     result = cv2.bitwise_and(frame, frame, mask=Masks.maskMergedGen(frame,cv2.COLOR_BGR2HSV))
+
     #result = Masks.maskGen(frame,cv2.COLOR_BGR2HSV)
 
     # Tracker
     if not trackInit:
-        trackOk = tracker.init(result, tuple(trackBox))
+        trackBox = cv2.selectROI(result, False, True)
+        trackOk = trackers[-1].init(result, tuple(trackBox))
         trackInit = True
+
 
 #    if not trackObj.init:
 #        trackOk = trackObj.tracker.init(result, trackObj.trackBox)
 #        trackObj.init = True
 
-    trackOk, trackBox = tracker.update(result)
+    trackOk, trackBox = trackers[-1].update(result)
     trackBox = np.asarray(trackBox)
 
     if trackOk:
@@ -69,7 +77,14 @@ while True:
     else:
         # Tracking failure
         Drawtools.drawText(result, "Tracking failure detected", np.array([100, 380]), (0, 0, 255))
-        #trackObj.tracker.update(result)
+        if cv2.waitKey(1) & 0xFF == ord('r'):
+            trackBox = cv2.selectROI(result, False, True)
+            trackers.append(cv2.TrackerCSRT_create())
+            trackOk = trackers[-1].init(result, tuple(trackBox))
+
+
+
+
 
     # Calculate and display fps
     # fps = cv2.getTickFrequency()/(cv2.getTickCount()- timer)
@@ -86,5 +101,5 @@ while True:
         break
 
 # After the loop release the cap object
-vid.release()
-cv2.destroyAllWindows()
+#vid.release()
+#cv2.destroyAllWindows()
