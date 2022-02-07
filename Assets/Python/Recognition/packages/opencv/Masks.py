@@ -8,10 +8,10 @@ def maskRed2():
     return numpy.array([170, 50, 50]) , numpy.array([180, 255, 255])
 
 def maskRedTuned1():
-    return numpy.array([5, 50,50]) , numpy.array([10, 255 , 255])
+    return numpy.array([2, 100,100]) , numpy.array([8, 255 , 255])
 
 def maskRedTuned2():
-    return numpy.array([175, 50, 50]) , numpy.array([180, 255, 255])
+    return numpy.array([172, 100, 100]) , numpy.array([178, 255, 255])
 
 def maskBlue():
     return numpy.array([100,50,50]) , numpy.array([130,255,255])
@@ -22,11 +22,11 @@ def maskWhite():
 def maskOrange1():
     return numpy.array([10, 150, 100]) , numpy.array([20, 255 , 255])
 
-def maskMergedGen(frame , colorscheme):
+def maskMergedGen(frame , colorscheme , maskscheme1 , maskscheme2 ):
     # It converts the BGR color space of image to HSV color space
     hsv = cv2.cvtColor(frame, colorscheme)
-    lower1 , upper1 = maskRed1()
-    lower2 , upper2 = maskRed2()
+    lower1 , upper1 = maskscheme1
+    lower2 , upper2 = maskscheme2
     mask1 = cv2.inRange(hsv,lower1,upper1)
     mask2 = cv2.inRange(hsv,lower2,upper2)
     return mask1 + mask2
