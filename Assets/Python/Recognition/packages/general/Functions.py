@@ -1,9 +1,5 @@
 def trackerstorage():
-
     return
-
-
-
 
 def boxCordFormatSeb(array):
     array[0] = abs(array[0]-500)
