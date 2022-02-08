@@ -1,6 +1,3 @@
-import random
-import string
-
 import cv2
 import numpy as np
 import packages.opencv.Drawtools as Drawtools
@@ -8,8 +5,6 @@ import packages.opencv.Masks as Masks
 import packages.general.Functions as Functions
 import packages.opencv.TrackerO as TrackerO
 import packages.network.SocketO as SocketO
-
-# StartX , StartY , Width ( from StartX to ... ) , Height ( from StartY to ...)
 
 
 # initialize tracker
@@ -50,8 +45,9 @@ while True:
     # so when multiplied with original image removes all non-blue regions
     result = cv2.bitwise_and(frame, frame, mask=Masks.maskMergedGen(frame,
                                                                     cv2.COLOR_BGR2HSV,
-                                                                    Masks.maskRedTuned1(),
-                                                                    Masks.maskRedTuned2()))
+                                                                    Masks.maskRed1(),
+                                                                    Masks.maskRed2()))
+    #result = Masks.maskMergedGen(frame,cv2.COLOR_BGR2HSV,Masks.maskRed1(),Masks.maskRed2())
 
     #result = Masks.maskGen(frame,cv2.COLOR_BGR2HSV)
 
