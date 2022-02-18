@@ -42,7 +42,7 @@ def maskMergedGen(frame, colorscheme, maskscheme1, maskscheme2):
 
 def maskGen(frame, colorscheme):
     hsv = cv2.cvtColor(frame, colorscheme)
-    lower, upper = maskRedTuned2()
+    lower, upper = maskRed2()
     return cv2.inRange(hsv, lower, upper)
 
     # Red
