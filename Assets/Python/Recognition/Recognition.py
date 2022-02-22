@@ -1,87 +1,58 @@
 import cv2
-import numpy as np
-import Functions
-import math
-import socket
+import numpy
+import packages.general.Functions as Functions
+import packages.network.SocketO as SocketO
+import packages.opencv.Drawtools as Drawtools
+import packages.opencv.Masks as Masks
+import packages.opencv.FrameObjectSingle as FrameO
+import packages.opencv.TrackerO as TrackerO
 
-# StartX , StartY , Width ( from X to ) , Height ( from Y to )
-trackBox = (287, 150, 130, 130)
-collideBox = (10, 100, 50, 50)
+sock = SocketO.SocketO()
+sock.setIP("192.168.10.166")
+sock.setPort(5065)
+sock.setUDP()
+sock.createSocket()
 
-# define a video capture object
-vid = cv2.VideoCapture(0)
-ret , frame = vid.read()
+# Define a video capture frame object
+cam = FrameO.FrameObjectSingle("cam")
+cam.ops("set input cam")
 
-# initialize tracker
+# Define a inverted frame object
+inverted = FrameO.FrameObjectSingle("inv")
 
-#tracker = cv2.TrackerTLD_create() # Reliable but weird behaviour
+# Define a masked frame object
+masked = FrameO.FrameObjectSingle("masked")
 
-
-#tracker = cv2.TrackerMOSSE_create()
-tracker = cv2.TrackerCSRT_create()
-
-trackinit = False
-
-#bbox = cv2.selectROI(frame, False)
-#pip install opencv-contrib-python==3.4.11.45
-
-#UDP_IP = "127.0.0.1"
-UDP_IP = "192.168.10.166"
-UDP_PORT = 5065
-#AF_INET = IPv4
-#SOCK_DGRAM = UDP
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# For tracker... pip install opencv-contrib-python==3.4.11.45
+trackO = TrackerO.TrackerO()
+# trackO.ops("set tracker csrt")
+trackO.ops("set tracker trackbox", numpy.array([200, 150, 120, 120]))
+trackO.ops("set tracker rootbox", numpy.array([200, 150, 120, 120]))
 
 while True:
-    timer = cv2.getTickCount()
-    # Capture the video frame by frame
-    ret, frame = vid.read()
-    inverted = cv2.flip(frame, 1)
-
-    # The black region in the mask has the value of 0,
-    # so when multiplied with original image removes all non-blue regions
-    result = cv2.bitwise_and(frame, frame, mask=Functions.maskGen(np,frame))
-
-    #Tracker
-    if not trackinit:
-        trackok = tracker.init(result, trackBox)
-        trackinit = True
-
-    trackok, trackBox = tracker.update(result)
-
-    if trackok:
-        Functions.drawBox(result,trackBox,(0,255,0))
-        Functions.drawMultipleText(result,("trackBox" ,
-                            "X: " + str(int(trackBox[0])),
-                            "Xw: " + str(int(trackBox[0])+int(trackBox[2])),
-                            "Y: " + str(int(trackBox[1])),
-                            "Yh: " + str(int(trackBox[1]) + int(trackBox[3])) ) , [100, 380] ,(0,255,0))
-
-        #print(Functions.boxCordsToString(trackBox))
-        sock.sendto((Functions.boxCordsToString(trackBox)).encode(), (UDP_IP, UDP_PORT))
-
-    else:
-        # Tracking failure
-        cv2.putText(result, "Tracking failure detected", (100, 380), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
-        tracker.update(result)
-
-    #if Functions.detectRectangleCollision(collideBox,trackBox):
-    #cv2.putText(result, "Collision", (100, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+    # timer = cv2.getTickCount()
+    cam.ops("set frame input")
+    camFrame = cam.ops("return frame")
+    inverted.ops("set input frame", camFrame)
+    masked.ops("set input frame", camFrame)
+    inverted.ops("set frame inv")
+    masked.ops("set frame mergedmaskbitand", Masks.maskRedTuned1(), Masks.maskRedTuned2())
+    trackO.ops("init tracker", masked.ops("return frame"))
+    trackO.ops("update tracker", masked.ops("return frame"))
+    # sock.socket.sendto((Functions.boxCordsToString(trackBox,"Seb")).encode(), (sock.ip, sock.port))
 
     # Calculate and display fps
-    #fps = cv2.getTickFrequency()/(cv2.getTickCount()- timer)
-    #cv2.putText(result,str(fps),(75,50),cv2.FONT_HERSHEY_COMPLEX,0.7,(255,255,255),2)
+    # fps = cv2.getTickFrequency()/(cv2.getTickCount()- timer)
+    # cv2.putText(result,str(fps),(75,50),cv2.FONT_HERSHEY_COMPLEX,0.7,(255,255,255),2)
 
-    #Display options
-    #cv2.imshow('frame', frame)
-    cv2.imshow('inverted',inverted)
-    #cv2.imshow('mask', mask)
-    cv2.imshow('result', result)
+    cam.ops("show frame")
+    inverted.ops("show frame")
+    masked.ops("show frame")
 
-    #break video capture
+    # break video capture
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 # After the loop release the cap object
-vid.release()
-cv2.destroyAllWindows()
+# vid.release()
+# cv2.destroyAllWindows()

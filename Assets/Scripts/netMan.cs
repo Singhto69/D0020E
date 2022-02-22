@@ -13,42 +13,46 @@
 
 public class netMan : MonoBehaviour
  {
-     public string ip;
-     public IPAddress hostaddress; 
-     public int port = 5065;
-     public IPEndPoint ipep;
-     public IPEndPoint sender;
-     public UdpClient newSock;
-     public Thread networkThread;
+    public string ip;
+    public IPAddress hostaddress; 
+    public int port = 5065;
+    public IPEndPoint ipep;
+    public IPEndPoint sender;
+    public UdpClient newSock;
+    public Thread networkThread;
 
-     public GameObject dot;
-     public Transform prefab;
+    public GameObject dot;
+    public Transform prefab;
 
-     //public Boolean rec;
-     public int[] coordList;
-     public byte[] receivedData;
-     public string dataString;
+    //public Boolean rec;
+    public int[] coordList;
+    public byte[] receivedData;
+    public string dataString;
  
     public string testString;
 
     public GameObject Sphere;
+    public bool useMouse = false;
+    
 
-     void Start()
+    void Start()
      {
+        if(!useMouse)
+        {
          networkThread = new Thread(ReceiveData);
          networkThread.Start();
-        testString = "305:112:0:0:";
-        coordList = new int[4];
+         testString = "305:112:0:0:";
+         coordList = new int[4];
          receivedData = new byte[0];
         
          ipep = new IPEndPoint(IPAddress.Any, port);
          newSock = new UdpClient(ipep);
          sender = new IPEndPoint(IPAddress.Any, 0);
-     }
+        }
+    }
  
      void Update()
      {
-        
         //coordList = getCoords(testString);
         //getCoords(testString);
          //ReceiveData();
@@ -57,7 +61,7 @@ public class netMan : MonoBehaviour
      public void ReceiveData()
      {
         List<int>templist = new List<int>();
-        /* if (newSock.Available > 0)
+         if (newSock.Available > 0)
          {
             receivedData = newSock.Receive(ref sender);
             dataString = Encoding.ASCII.GetString(receivedData);
@@ -66,9 +70,9 @@ public class netMan : MonoBehaviour
          }
          else
          {
-            //print("No data to receive");
+            print("No data to receive");
             
-         }*/
+         }
      }
 
     public void getCoords(String dataString){
