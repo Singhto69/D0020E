@@ -32,7 +32,7 @@ public class AudioManager : MonoBehaviour
         Play("Theme");
     }
 
-    void Play(string name)
+    public void Play(string name)
     {
         Sound sound = Array.Find(sounds, s => s.name == name);
         if (sound == null)
@@ -44,7 +44,7 @@ public class AudioManager : MonoBehaviour
         sound.source.Play();
     }
 
-    void Stop(string name)
+    public void Stop(string name)
     {
         Sound sound = Array.Find(sounds, s => s.name == name);
         if (sound == null)
