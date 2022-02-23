@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class LetterController : MonoBehaviour
 {
+    public bool useMouse = false;
     public GameObject Letter_Prefab;//Set in editor
     public netMan networkManager;
     private static Camera cam;
@@ -34,7 +35,7 @@ public class LetterController : MonoBehaviour
     private static Text slicedText;
     private static Text scoreText;
     public GameObject Slicecheck;
-    public bool Slicing = false;
+    public bool slicing = false;
     static Dictionary<string, int> scorelist = new Dictionary<string, int>()
         {
             { "D", 1 }, { "O", 2 }, { "R", 1 }, { "Ä", 4 }, { "S", 1 }, { "Å", 4 },
@@ -214,23 +215,32 @@ public class LetterController : MonoBehaviour
 
     void FixedUpdate()
     {
-        networkManager.ReceiveData();
-        
-        Vector3 udppos = new Vector3((float)networkManager.coordList[0] ,
-                        (float)networkManager.coordList[1],
-                        0.0f);
-        print(udppos);
+        slicing = Slicecheck.GetComponent<Slice>().isSlicing;
+        Vector3 pos;
+        if (!useMouse)
+        {
+            networkManager.ReceiveData();
 
-        Vector3 pos = cam.ScreenToWorldPoint(udppos);
-        //Vector3 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 udppos = new Vector3((float)networkManager.coordList[0],
+                            (float)networkManager.coordList[1],
+                            0.0f);
+            //print(udppos);
+
+            pos = cam.ScreenToWorldPoint(udppos);
+        }
+        else
+        {
+        pos = cam.ScreenToWorldPoint(Input.mousePosition);
 
         //Input.mousePosition
         //cam.ScreenToWorldPoint(udppos);
         //print(Input.mousePosition);
+        }
+
         sword.transform.position = pos;
         (networkManager.Sphere).transform.position = pos;
 
-        if(currentLetters.Count < AMOUNT_LETTERS)
+        if (currentLetters.Count < AMOUNT_LETTERS)
         {
             currentLetters.Add(SpawnLetter());
         }
