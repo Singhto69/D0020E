@@ -24,7 +24,7 @@ public class BombBehaviour : MonoBehaviour
             }
         }
 
-        FindObjectOfType<AudioManager>().Play("Explosion");
+        FindObjectOfType<AudioManager>()?.Play("Explosion");
 
         Destroy(gameObject);
     }

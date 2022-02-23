@@ -12,6 +12,8 @@ public class Slice : MonoBehaviour
     public float threshold = 7.0f;
     public GameObject trail;
 
+    private bool canMakeSound = true;
+
     void Start()
     {
         useMouse = GameObject.Find("Canvas").GetComponent<LetterController>().useMouse;
@@ -39,8 +41,30 @@ public class Slice : MonoBehaviour
             lastPos[1] = Input.mousePosition.y;
         }
         float Pytsen = Mathf.Sqrt(Mathf.Pow(diffX, 2) + Mathf.Pow(diffY, 2)) * 100;
+        var wasSlicing = isSlicing;
         isSlicing = Pytsen > threshold ? true : false;
 
+        if(isSlicing && !wasSlicing && canMakeSound)
+        {
+            canMakeSound = false;
+            var random = Random.Range(0, 2);
+
+            if(random == 0)
+            {
+                FindObjectOfType<AudioManager>()?.Play("SliceLight");
+            }
+            else
+            {
+                FindObjectOfType<AudioManager>()?.Play("SliceBass");
+            }
+
+            Invoke("resetSoundTimer", 0.2f);
+        }
+    }
+
+    void resetSoundTimer()
+    {
+        canMakeSound = true;
     }
 
     void Update()

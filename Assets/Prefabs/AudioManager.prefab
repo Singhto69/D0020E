@@ -56,3 +56,21 @@ MonoBehaviour:
     volume: 0.5
     pitch: 1
     source: {fileID: 0}
+  - name: SliceLight
+    clip: {fileID: 8300000, guid: fe0b1f9aeb45b41b089175aeeabd5d95, type: 3}
+    loop: 0
+    volume: 0.1
+    pitch: 1.2
+    source: {fileID: 0}
+  - name: SliceBass
+    clip: {fileID: 8300000, guid: d46323e22e74e46baa241cbf48c85671, type: 3}
+    loop: 0
+    volume: 0.1
+    pitch: 1
+    source: {fileID: 0}
+  - name: LetterBreak
+    clip: {fileID: 8300000, guid: 3becec1909f194046945d85ac1077772, type: 3}
+    loop: 0
+    volume: 0.1
+    pitch: 1
+    source: {fileID: 0}
