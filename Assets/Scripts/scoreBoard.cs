@@ -8,31 +8,118 @@ using System.Collections;
 
 public class scoreBoard : MonoBehaviour
 {
-    static int top10 = 10;
+
+    public InputField nameInputField;
+
+    static int maxPos = 5;
     static List<string> topNames = new List<string>();
     static List<int> topScores = new List<int>();
-    string name;
-    int score;
+    string name = "";
+    int score = 442;
+    bool newHighScore = false;
+    int arrPos = 0;
+    public static string input;
 
-    public scoreBoard(string name, int score) {
-        this.name = name;
-        this.score = score;
-        readFile();
+    GameObject InputFieldGameObject;
+
+    InputField inputScoreField;
+
+    string textOfField;
+    Button savebtn;
+    Button mainMenubtn;
+
+    public bool isStart = false;
+
+    void FixedUpdate()
+    {
+        if(newHighScore)
+        {
+            GameObject.Find("Pos" + (arrPos + 1)).GetComponent<Text>().text = inputScoreField.text;
+            GameObject.Find("Pos" + (arrPos + 1)).GetComponent<Text>().color = Color.red;
+            GameObject.Find("score" + (arrPos + 1)).GetComponent<Text>().text = topScores[arrPos].ToString();
+            GameObject.Find("score" + (arrPos + 1)).GetComponent<Text>().color = Color.red;
+        }
     }
+
+
+    void TaskOnClick()
+    {
+        Debug.Log("You have clicked the button!");
+        savebtn.interactable = false;
+        inputScoreField.interactable = false;
+        if(newHighScore)
+        {
+            topNames[arrPos] = inputScoreField.text;
+            GameObject.Find("Pos" + (arrPos + 1)).GetComponent<Text>().text = inputScoreField.text;
+            GameObject.Find("Pos" + (arrPos + 1)).GetComponent<Text>().color = Color.red;
+            GameObject.Find("score" + (arrPos + 1)).GetComponent<Text>().text = topScores[arrPos].ToString();
+            GameObject.Find("score" + (arrPos + 1)).GetComponent<Text>().color = Color.red;
+        }
+        
+        writeToFile();
+    }
+
+
     void Start()
     {
+
+        savebtn = GameObject.Find("saveScoreButton").GetComponent<Button>();
+        savebtn.onClick.AddListener(TaskOnClick);
+
+        mainMenubtn = GameObject.Find("mainMenubtn").GetComponent<Button>();
+        //mainMenubtn.onClick.AddListener(TaskOnClick2);
+
+        inputScoreField = GameObject.Find("InputScoreField").GetComponent<InputField>();
+        savebtn.interactable = false;
+        inputScoreField.interactable = false;
+
         readFile();
-        for(int i = 0; i<5; i++)
+
+        int lastPosition = topScores.Count - 1;
+        int lowestScore = 0;
+        if (topScores.Count > 1)
         {
-            if (i < topNames.Count)
-            {
-                GameObject.Find("Pos" + (i + 1)).GetComponent<Text>().text = topNames[i] + ": " + topScores[i];
-            }
-            else
-            {
-                GameObject.Find("Pos" + (i + 1)).GetComponent<Text>().text = "- : -";
-            }
+            lowestScore = (int)topScores[lastPosition];
         }
+        if (score > lowestScore || topScores.Count < 1 || lastPosition < maxPos-1)
+        {
+            savebtn.interactable = true;
+            inputScoreField.interactable = true;
+            newHighScore = true;
+            if(newHighScore)
+            {
+                GameObject.Find("Congratulations").GetComponent<Text>().text = "Grattis, dina poäng är bland de fem bästa!";
+                if (lastPosition + 1 < maxPos)
+                {
+                    topScores.Add(score);
+                    topNames.Add(name);
+                }
+                else
+                {
+                    topScores[lastPosition] = score;
+                    topNames[lastPosition] = name;
+                }
+                bubbleSort(topNames, topScores);
+            }  
+        }
+
+
+        bool found = false;
+
+        for (int i = 0; i < topNames.Count; i++)
+        {
+            print("name = " + topNames[i]);
+            GameObject.Find("Pos" + (i + 1)).GetComponent<Text>().text = topNames[i] + " : " + topScores[i];
+
+            if (newHighScore && (score == topScores[i]))
+                {
+                    arrPos = i;
+                }
+            GameObject.Find("Pos" + (i + 1)).GetComponent<Text>().text = topNames[i];
+            GameObject.Find("score" + (i + 1)).GetComponent<Text>().text = topScores[i].ToString();
+
+        }
+
     }
     public void readFile() {   
         
@@ -55,12 +142,15 @@ public class scoreBoard : MonoBehaviour
     public void writeToFile() {
         try
         {
-            string path = @"/Users/erik/Desktop/test.txt";
+            print("name2 = " + topNames[0]);
+            print("score2 = " + topScores[0]);
+            string path = @"Assets\score.txt";
             string nameScore = "";
-
-            for(int i = 0; i < topNames.Count; i++) {
-                nameScore += topNames[i] + "\n" + topScores[i].ToString() + "\n";
+            print("count = " + topScores.Count);
+            for(int i = 0; i < topScores.Count; i++) {
+                nameScore += topNames[i] + Environment.NewLine + topScores[i].ToString() + Environment.NewLine;
             }
+            print(nameScore);
             File.WriteAllText(path, nameScore);
         }
         catch(Exception e)
@@ -71,27 +161,9 @@ public class scoreBoard : MonoBehaviour
         {
             Debug.Log("Executing finally block, write.");
         }
+
     }
 
-    public void checkNewRecord() {
-        int lastPosition = topScores.Count-1;
-        int lowestScore = 0;
-        if(topScores.Count > 1) {
-            lowestScore = (int)topScores[lastPosition];
-        }
-        if(score > lowestScore || topScores.Count < 1 || lastPosition < top10) {
-            if(lastPosition + 1 < top10) {
-                topScores.Add(score);
-                topNames.Add(name);
-            }
-            else {
-                topScores[lastPosition] = score;
-                topNames[lastPosition] = name;
-            }
-            bubbleSort(topNames, topScores);
-            writeToFile();
-        }
-    }
 
     /*
     * Sort descending
@@ -112,4 +184,7 @@ public class scoreBoard : MonoBehaviour
             }
         }
     }
+
+   
+
 }
