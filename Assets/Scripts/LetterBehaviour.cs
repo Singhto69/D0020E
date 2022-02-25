@@ -21,6 +21,9 @@ public class LetterBehaviour : MonoBehaviour
         {
             string let = (gameObject.GetComponent<Text>().text);
             LetterController.getLet(let);
+
+            FindObjectOfType<AudioManager>()?.Play("LetterBreak");
+
             Destroy(gameObject);
         }
     }
