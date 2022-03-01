@@ -32,10 +32,12 @@ public class LetterController : MonoBehaviour
     static int firstLetter = 0;
     static List<string> slicedLetters = new List<string>();
     static List<string> collectedWords = new List<string>();
+    static List<int> collectedScore = new List<int>();
     private static Text slicedText;
     private static Text scoreText;
     public GameObject Slicecheck;
     public bool slicing = false;
+    private GameObject DataOBJ;
     static Dictionary<string, int> scorelist = new Dictionary<string, int>()
         {
             { "D", 1 }, { "O", 2 }, { "R", 1 }, { "Ä", 4 }, { "S", 1 }, { "Å", 4 },
@@ -56,10 +58,18 @@ public class LetterController : MonoBehaviour
 
     private static int score = 0;
 
-
+    void OnDisable()
+    {
+        //CollectedWords, CollectedScore, Scoretot.
+        DataOBJ.GetComponent<GameData>().words = collectedWords;
+        DataOBJ.GetComponent<GameData>().scorePWord = collectedScore;
+        DataOBJ.GetComponent<GameData>().scoreTot = score;
+        //Behåll på scenbyte.
+    }
 
     void Start()
     {
+        DataOBJ = GameObject.Find("DataOBJ");
         cam = Camera.main;
         rightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x;
         leftEdge = cam.ScreenToWorldPoint(new Vector2(0, 0)).x;
@@ -75,12 +85,12 @@ public class LetterController : MonoBehaviour
         //t.ex om vi har AAAABBCD och vi f�r random value 4 s� plockar vi index 4 och f�r ett B p� 25% probability.
 
         //Frekvens A-� baserad p� https://www.sttmedia.com/characterfrequency-swedish
-        int[] bfreq = new int[] {1004, 131, 171, 490, 985, 181, 344, 285, 501, 90, 324, 481, 355, 845, 406, 157, 1, 788, 541, 889, 186, 255, 0, 11, 49, 4, 166, 210, 150};
-        for(int i = 0; i< 29; i++)
+        int[] bfreq = new int[] { 1004, 131, 171, 490, 985, 181, 344, 285, 501, 90, 324, 481, 355, 845, 406, 157, 1, 788, 541, 889, 186, 255, 0, 11, 49, 4, 166, 210, 150 };
+        for (int i = 0; i < 29; i++)
         {
-            for (int j = 0; j< bfreq[i]; j++)
+            for (int j = 0; j < bfreq[i]; j++)
             {
-                if(i<26) // A -> Z
+                if (i < 26) // A -> Z
                 {
                     LetterString += (char)('A' + i);
                 }
@@ -112,7 +122,7 @@ public class LetterController : MonoBehaviour
 
         COLLISION_LAYER = LayerMask.NameToLayer("letter_collision");
         NO_COLLISION_LAYER = LayerMask.NameToLayer("letter_no_collision");
-       // Physics2D.IgnoreLayerCollision(NO_COLLISION_LAYER, NO_COLLISION_LAYER);
+        // Physics2D.IgnoreLayerCollision(NO_COLLISION_LAYER, NO_COLLISION_LAYER);
 
         var tempLetter = SpawnLetter();
         textHeight = ((RectTransform)tempLetter.transform).rect.height;
@@ -182,7 +192,7 @@ public class LetterController : MonoBehaviour
                         tempNumLetters = numLetters + 1;
                         exist = true;
 
-                        if (subWordString.Equals(word)) // ge po�ng om ordet finns
+                        if (subWordString.Equals(word)) // ge poäng om ordet finns
                         {
                             collectedWords.Add(subWordString);
                             int score1 = 0;
@@ -192,7 +202,8 @@ public class LetterController : MonoBehaviour
                                 score1 += scorelist[letter];
                                 score += scorelist[letter];
                             }
-                            print("Po�nggivande ord: " + subWordString.ToUpper() + ", " + score1.ToString() + " po�ng.");
+                            collectedScore.Add(score1);
+                            print("Poänggivande ord: " + subWordString.ToUpper() + ", " + score1.ToString() + " poäng.");
                             LetterController.scoreText.text = LetterController.score.ToString();
                             score1 = 0;
 
@@ -230,11 +241,11 @@ public class LetterController : MonoBehaviour
         }
         else
         {
-        pos = cam.ScreenToWorldPoint(Input.mousePosition);
+            pos = cam.ScreenToWorldPoint(Input.mousePosition);
 
-        //Input.mousePosition
-        //cam.ScreenToWorldPoint(udppos);
-        //print(Input.mousePosition);
+            //Input.mousePosition
+            //cam.ScreenToWorldPoint(udppos);
+            //print(Input.mousePosition);
         }
 
         sword.transform.position = pos;
@@ -246,19 +257,19 @@ public class LetterController : MonoBehaviour
         }
 
         //Reverse iterate to allow removing elements
-        for (int i = currentLetters.Count-1; i>=0; i--)
+        for (int i = currentLetters.Count - 1; i >= 0; i--)
         {
             GameObject letter = currentLetters[i];
 
             //If letter has already been destroyed
-            if(letter == null)
+            if (letter == null)
             {
                 Debug.Log("Removing already destroyed letter");
-               currentLetters.RemoveAt(i);
+                currentLetters.RemoveAt(i);
                 continue;
             }
 
-            if(letter.layer == NO_COLLISION_LAYER && letter.transform.position.y > cam.ScreenToWorldPoint(new Vector2(0, Screen.height / 4)).y)
+            if (letter.layer == NO_COLLISION_LAYER && letter.transform.position.y > cam.ScreenToWorldPoint(new Vector2(0, Screen.height / 4)).y)
             {
                 letter.layer = COLLISION_LAYER;
             }
@@ -326,7 +337,7 @@ public class LetterController : MonoBehaviour
         Rigidbody2D rigidbody = letter.GetComponent<Rigidbody2D>();
         float yVelocity = rigidbody.velocity.y;
         float startPosition = letter.transform.position.x;
-        float distanceToSide = Mathf.Max(rightEdge-startPosition, startPosition-leftEdge);
+        float distanceToSide = Mathf.Max(rightEdge - startPosition, startPosition - leftEdge);
 
         //dx = Vx * (2Vy/g)  ==  Vx = (dx*g)/(2Vy)
         return (distanceToSide * Mathf.Abs(Physics2D.gravity.y) * rigidbody.gravityScale) / (2 * yVelocity);
@@ -339,14 +350,14 @@ public class LetterController : MonoBehaviour
         float startPosition = letter.transform.position.x;
 
         //x-Displacement = Vx * t == Vx * (2Vy/g)
-        float sideDisplacement = velocity.x * (2*velocity.y / (Mathf.Abs(Physics2D.gravity.y)*rigidbody.gravityScale));
+        float sideDisplacement = velocity.x * (2 * velocity.y / (Mathf.Abs(Physics2D.gravity.y) * rigidbody.gravityScale));
         float position = startPosition + sideDisplacement;
 
         //Debug.Log("Out left: " + (position < screenStart) + " Out right: " + (position > screenWidth) + " land: " + position + " Start: " + startPosition);
         //Debug.Log("screenStart: " + screenStart + " screenWidth: "+ rightEdge);
 
         // -1 and +1 to avoid Round-off errors...
-        return position < leftEdge-1 || position > rightEdge+1;
+        return position < leftEdge - 1 || position > rightEdge + 1;
 
     }
 
