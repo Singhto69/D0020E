@@ -359,10 +359,10 @@ public class LetterController : MonoBehaviour
         mousePos.x = currentEvent.mousePosition.x;
         mousePos.y = cam.pixelHeight - currentEvent.mousePosition.y;
 
-        GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-        GUILayout.Label("Screen pixels: " + cam.pixelWidth + ":" + cam.pixelHeight);
-        GUILayout.Label("Mouse position: " + mousePos);
-        GUILayout.Label("World position: " + cam.ScreenToWorldPoint(mousePos));
-        GUILayout.EndArea();
+        //GUILayout.BeginArea(new Rect(20, 20, 250, 120));
+        //GUILayout.Label("Screen pixels: " + cam.pixelWidth + ":" + cam.pixelHeight);
+        //GUILayout.Label("Mouse position: " + mousePos);
+        //GUILayout.Label("World position: " + cam.ScreenToWorldPoint(mousePos));
+        //GUILayout.EndArea();
     }
 }
