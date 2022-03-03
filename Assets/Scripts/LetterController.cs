@@ -64,12 +64,17 @@ public class LetterController : MonoBehaviour
         DataOBJ.GetComponent<GameData>().words = collectedWords;
         DataOBJ.GetComponent<GameData>().scorePWord = collectedScore;
         DataOBJ.GetComponent<GameData>().scoreTot = score;
-        //Behåll på scenbyte.
+
+   
     }
 
     void Start()
     {
         DataOBJ = GameObject.Find("DataOBJ");
+        score = 0;
+        slicedLetters.Clear();
+        collectedWords.Clear();
+        collectedScore.Clear();
         cam = Camera.main;
         rightEdge = cam.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x;
         leftEdge = cam.ScreenToWorldPoint(new Vector2(0, 0)).x;

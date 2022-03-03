@@ -10,12 +10,13 @@ public class scoreBoard : MonoBehaviour
 {
 
     public InputField nameInputField;
+    private GameObject DataOBJ;
 
     static int maxPos = 5;
     static List<string> topNames = new List<string>();
     static List<int> topScores = new List<int>();
     string name = "";
-    int score = 442;
+    int score = 0;
     bool newHighScore = false;
     int arrPos = 0;
     public static string input;
@@ -57,16 +58,20 @@ public class scoreBoard : MonoBehaviour
         }
         
         writeToFile();
+        topNames.Clear();
+        topScores.Clear();
     }
 
 
     void Start()
     {
+        DataOBJ = GameObject.Find("DataOBJ");
 
+        score = DataOBJ.GetComponent<GameData>().scoreTot;
         savebtn = GameObject.Find("saveScoreButton").GetComponent<Button>();
         savebtn.onClick.AddListener(TaskOnClick);
 
-        mainMenubtn = GameObject.Find("mainMenubtn").GetComponent<Button>();
+        //mainMenubtn = GameObject.Find("mainMenubtn").GetComponent<Button>();
         //mainMenubtn.onClick.AddListener(TaskOnClick2);
 
         inputScoreField = GameObject.Find("InputScoreField").GetComponent<InputField>();
