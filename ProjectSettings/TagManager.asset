@@ -6,6 +6,7 @@ TagManager:
   tags:
   - sword
   - letter
+  - SliceCheck
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - 
   - Water
   - UI
-  - letter_collision
-  - letter_no_collision
+  - 
+  - 
   - 
   - 
   - 
