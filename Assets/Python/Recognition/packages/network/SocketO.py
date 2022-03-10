@@ -1,4 +1,5 @@
 from socket import *
+import packages.general.Functions as Functions
 
 
 class SocketO:
@@ -31,7 +32,14 @@ class SocketO:
     def setTransmitObj(self, obj):
         self.transmitObj = obj
 
+    def transmithardcode(self):
+        x = self.transmitObj.getOutputVal()
+        # self.socket.sendto(array.encode('utf8'), (self.ip, self.port))
+
     def transmit(self, param):
         x = self.transmitObj.getOutputVal()
-        if param == "val" and type(x) == str:
+        if param == "tracker" and type(x) == str:
+            self.socket.sendto(x.encode('utf8'), (self.ip, self.port))
+        elif param == "matrix":
+            x = Functions.boxCordsToString(x, "None")
             self.socket.sendto(x.encode('utf8'), (self.ip, self.port))

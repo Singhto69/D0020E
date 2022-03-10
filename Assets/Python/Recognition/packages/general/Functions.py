@@ -4,7 +4,7 @@ def trackerstorage():
 
 def boxCordFormatSeb(array):
     array[0] = abs(array[0] - 500)
-    array[1] = abs((array[1]) - 500)
+    array[1] = abs(array[1] - 500)
     return array
 
 

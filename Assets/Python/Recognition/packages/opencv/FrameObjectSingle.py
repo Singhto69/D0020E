@@ -26,7 +26,8 @@ class FrameObjectSingle:
 
         self.socket = None
         self.socketInput = None
-        self.matrix = Matrix.Matrix()
+
+
 
     def getTag(self):
         return self.tag
@@ -39,6 +40,8 @@ class FrameObjectSingle:
         return dimensions[0], dimensions[1], dimensions[2]
 
     def getMidPoint(self):
+        if self.midpoint is None:
+            return numpy.array([0, 0, 0, 0])
         return self.midpoint
 
     def getInputSource(self):

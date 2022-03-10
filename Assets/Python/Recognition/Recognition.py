@@ -2,6 +2,7 @@ import cv2
 import packages.network.SocketO as SocketO
 import packages.opencv.FrameObjectSingle as FrameO
 import packages.opencv.TrackerO as TrackerO
+import packages.math.Matrix as Matrix
 
 sock = SocketO.SocketO("192.168.10.166", 5065)
 sock.setUDP()
@@ -21,6 +22,8 @@ maskedred = FrameO.FrameObjectSingle("maskedred")
 # For tracker... pip install opencv-contrib-python==3.4.11.45, or any version < 4
 trackO = TrackerO.TrackerO("csrt")
 
+matrix = Matrix.Matrix()
+
 while True:
     # timer = cv2.getTickCount()
     cam.alterReadCam()
@@ -34,11 +37,18 @@ while True:
 
     maskedred.alterBinaryAnd(camFrame, binaryred.getFrame())
 
-    trackO.setTarget(binaryred)
-    trackO.setOutPut(maskedred.getFrame())
-    trackO.alterUpdate()
-    sock.setTransmitObj(trackO)
-    sock.transmit("val")
+    # trackO.setTarget(binaryred)
+    # trackO.setOutPut(maskedred.getFrame())
+    # trackO.alterUpdate()
+
+    matrix.setDimension((2, 4))
+    matrix.receive(binaryred.getMidPoint())
+
+    sock.setTransmitObj(matrix)
+    sock.transmit("matrix")
+    # sock.setTransmitObj(trackO)
+    # sock.transmit("val")
+    # sock.transmithardcode(binaryred.getMidPoint())
 
     # Calculate and display fps
     # fps = cv2.getTickFrequency()/(cv2.getTickCount()- timer)
@@ -46,7 +56,7 @@ while True:
 
     # cam.alter("show")
     inverted.alterShow()
-    binaryred.alterShow()
+    # binaryred.alterShow()
     maskedred.alterShow()
 
     # break video capture

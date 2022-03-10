@@ -7,6 +7,10 @@ class Matrix:
         self.columns = None
         self.rows = None
         self.shape = None
+        self.outputval = numpy.array([0, 0, 0, 0])
+
+    def getoutputval(self):
+        return self.outputval
 
     def receive(self, array):
         if self.columns is not None and self.rows is not None:
@@ -20,7 +24,7 @@ class Matrix:
             length = len(self.matrix)
             condA = length >= self.rows * self.columns
             condB = length < self.rows * self.columns
-            condC = length is 0
+            condC = length == 0
 
             if not condA:
                 self.matrix = numpy.append(self.matrix, array).astype(int)
@@ -28,9 +32,13 @@ class Matrix:
                     self.matrix = numpy.reshape(self.matrix, (int(len(self.matrix) / self.columns), self.columns))
                 return
 
-            self.matrix = numpy.reshape(self.matrix, (int(len(self.matrix) / self.columns), self.columns))
             self.matrix = numpy.append(self.matrix, array, axis=0)
+            self.matrix = numpy.reshape(self.matrix, (int(len(self.matrix) / self.columns), self.columns))
             self.matrix = numpy.delete(self.matrix, 0, 0)
+            interexpolate = self.interExtrapolate()
+            if interexpolate is not None:
+                self.outputval = interexpolate
+            # print(self.outputval)
 
     def interExtrapolate(self):
         shape = self.matrix.shape
@@ -51,7 +59,12 @@ class Matrix:
                 # extrapolate x3 and y3
                 x3 = int(x2 + ((x2 - x1) * 0.5))
                 y3 = int(m * x3 + b)
-                return numpy.array([x1dot5, y1dot5]).astype(int)
+                return numpy.array([x1dot5, y1dot5, 80, 100]).astype(int)
+        else:
+            return numpy.array([0, 0, 0, 0])
 
     def setDimension(self, tuple):
         self.rows, self.columns = tuple[0], tuple[1]
+
+    def getOutputVal(self):
+        return self.outputval
