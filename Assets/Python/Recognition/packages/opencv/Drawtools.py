@@ -1,7 +1,7 @@
 import cv2
 
 
-def drawMultipleText(frame, inputtext, startingcoordinates, color , spacing):
+def drawMultipleText(frame, inputtext, startingcoordinates, color, spacing):
     for t in inputtext:
         drawText(frame, t, tuple(startingcoordinates), color)
         startingcoordinates[1] = startingcoordinates[1] + spacing

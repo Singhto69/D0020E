@@ -2,6 +2,7 @@ import cv2
 import numpy
 import packages.opencv.Masks as Masks
 from packages.opencv import Drawtools
+import packages.math.Matrix as Matrix
 
 
 class FrameObjectSingle:
@@ -25,6 +26,7 @@ class FrameObjectSingle:
 
         self.socket = None
         self.socketInput = None
+        self.matrix = Matrix.Matrix()
 
     def getTag(self):
         return self.tag
