@@ -14,6 +14,7 @@ class Matrix:
 
     def receive(self, array):
         if self.columns is not None and self.rows is not None:
+            array[0] = abs(array[0] - 500) # Hardcoded inversion
             self.reshape(array.astype(int))
 
     def reshape(self, array):

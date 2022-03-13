@@ -26,10 +26,14 @@ public class Slice : MonoBehaviour
         clist = networkManagerOBJ.GetComponent<netMan>().coordList;
         if (!useMouse)
         {
-            diffX = Mathf.Abs(clist[0] * (Screen.width / 500) - lastPos[0]) / Screen.width;
-            diffY = Mathf.Abs(clist[1] * (Screen.height / 500) - lastPos[1]) / Screen.height;
-            lastPos[0] = clist[0] * (Screen.width / 500);
-            lastPos[1] = clist[1] * (Screen.height / 500);
+            var xPos = networkManagerOBJ.GetComponent<netMan>().Sphere.transform.position.x;
+            var yPos = networkManagerOBJ.GetComponent<netMan>().Sphere.transform.position.y;
+
+            diffX = Mathf.Abs(xPos - lastPos[0]) / Screen.width;
+            diffY = Mathf.Abs(yPos - lastPos[1]) / Screen.height;
+
+            lastPos[0] = xPos;
+            lastPos[1] = yPos;
         }
         else
         {
@@ -40,7 +44,7 @@ public class Slice : MonoBehaviour
         }
         float Pytsen = Mathf.Sqrt(Mathf.Pow(diffX, 2) + Mathf.Pow(diffY, 2)) * 100;
         var wasSlicing = isSlicing;
-        isSlicing = Mathf.Abs(Pytsen) > threshold ? true : false;
+        isSlicing = Mathf.Abs(Pytsen) >= threshold ? true : false;
 
         if(isSlicing && !wasSlicing && canMakeSound)
         {
@@ -75,11 +79,13 @@ public class Slice : MonoBehaviour
         }
         else
         {
-            newPos = Camera.main.ScreenToWorldPoint( new Vector3(clist[0] * (Screen.width / 500), clist[1] * (Screen.height / 500), 0));
+            //newPos = Camera.main.ScreenToWorldPoint(new Vector3((clist[0] * (Screen.width / 500)), (clist[1] * (Screen.height / 500))), 0);
+            //Debug.Log("Xn: " + clist[0] * (Screen.width / 500) + " Yn: " + clist[1] * (Screen.height / 500));
+            newPos = networkManagerOBJ.GetComponent<netMan>().Sphere.transform.position;
         }
         Debug.Log("X: " + clist[0] + " Y: " + clist[1]);
-        Debug.Log("X: " + clist[0] * (Screen.width / 500) + " Y: " + clist[1] * (Screen.height / 500));
-        Debug.Log(newPos);
+        Debug.Log("X: " + Input.mousePosition.x + " Y: " + Input.mousePosition.y);
+        //Debug.Log(newPos);
         trail.transform.position = newPos;
     }
 }

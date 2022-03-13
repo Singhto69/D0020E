@@ -83,6 +83,16 @@ public class netMan : MonoBehaviour
         foreach (char c in dataString){
             if(c == char.Parse(":")){
                 coordList[count] = tempint;
+                if(count%2 == 0)
+                {
+                    float x = coordList[count] * Screen.width / 500;
+                    coordList[count] = (int)(x);
+                }
+                else
+                {
+                    float y = coordList[count] * Screen.height / 500;
+                    coordList[count] = (int)(y);
+                }
                 count = count + 1;
                 tempint = 0;
                 if (count == 4){

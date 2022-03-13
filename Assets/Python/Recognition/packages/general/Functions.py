@@ -12,10 +12,9 @@ def boxCordsToString(array, format):
     newStr = ""
     if format == "Seb":
         array = boxCordFormatSeb(array)
-
     for x in array:
         newStr = newStr + str((int(x))) + ":"
-    # print(newStr)
+    print(newStr)
     return newStr
 
 
